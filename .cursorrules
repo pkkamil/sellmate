@@ -1,0 +1,34 @@
+# SellMate Development Rules
+
+## 1. Clean Code & Architecture
+- **Strict Typing**: Always use PHP 8.3/TypeScript strict typing. Ensure `declare(strict_types=1);` is at the top of every PHP file.
+- **Service Layer Pattern**: All business logic MUST reside in `app/Services`.
+- **Imports**: Always use absolute paths with the `@/` alias for frontend imports (e.g., `import { ... } from "@/services/api.service"` instead of `./api.service`).
+- **FormRequests**: Use dedicated `FormRequest` classes for ALL validations. No `$request->validate()` in controllers.
+- **API Resources**: Always return data wrapped in `JsonResource` or `AnonymousResourceCollection`.
+- **Naming Conventions**:
+    - **Methods**: Descriptive and camelCase (e.g., `calculateOptimalPrice`).
+    - **Variables**: camelCase (e.g., `extractedData`).
+    - **Classes**: PascalCase (e.g., `VisionService`).
+- **DRY & SOLID**: Avoid code duplication. Extract reusable logic to Services, Traits, or Helpers.
+- **No Useless Comments**: Avoid comments that state the obvious. Only comment "Why" not "What". Remove boilerplate comments.
+
+## 2. Frontend Excellence (Next.js)
+- **Component Structure**: Separate presentation (UI) from logic (Hooks).
+- **Service Pattern**: API calls MUST be in `src/services/`.
+- **Custom Hooks**: Complex state/logic MUST be in `src/hooks/`.
+- **Design System**: Adhere to the Premium SellMate aesthetic (glassmorphism, subtle animations).
+- **I18n Compliance**: All user-facing strings must be internationalized via `useTranslation()`. Ensure 'en' and 'pl' translations.
+- **Client Directives**: Use `"use client";` carefully and only when necessary.
+
+## 3. Development Workflow
+- **Backend (Docker/Sail)**: The backend runs via **Laravel Sail**. Use `./vendor/bin/sail` for all commands.
+    - Example: `./vendor/bin/sail artisan migrate`
+- **Frontend (Local)**: The frontend runs locally via **Yarn**.
+    - Example: `yarn dev`
+- **Verification**: ALWAYS run tests/lint before declaring a task finished.
+- **Commit Messages**: Use human-readable, descriptive commit messages.
+
+## 4. Documentation
+- Keep READMEs synchronized with architectural changes.
+- Ensure all public methods are documented if they are part of a shared API/Service.

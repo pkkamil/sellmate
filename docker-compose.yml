@@ -1,0 +1,102 @@
+services:
+    # Backend Services
+    nginx:
+        image: 'nginx:alpine'
+        container_name: sellmate_nginx
+        ports:
+            - '8000:80'
+        volumes:
+            - './backend/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf'
+            - './backend:/var/www/html'
+        depends_on:
+            - laravel.test
+        networks:
+            - sellmate_network
+
+    laravel.test:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP:-1000}'
+                WWWUSER: '${WWWUSER:-1000}'
+        container_name: sellmate_api
+        volumes:
+            - './backend:/var/www/html'
+        environment:
+            - LARAVEL_SAIL=1
+            - WWWUSER=${WWWUSER:-1000}
+        depends_on:
+            - pgsql
+            - redis
+        networks:
+            - sellmate_network
+            - sail
+
+    redis:
+        image: 'redis:alpine'
+        container_name: sellmate_redis
+        volumes:
+            - 'redis_data:/data'
+        networks:
+            - sellmate_network
+
+    pgsql:
+        image: 'postgres:18-alpine'
+        ports:
+            - '${FORWARD_DB_PORT:-5432}:5432'
+        environment:
+            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE:-sellmate}'
+            POSTGRES_USER: '${DB_USERNAME:-sail}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - 'sail-pgsql:/var/lib/postgresql'
+            - './backend/vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - pg_isready
+                - '-q'
+                - '-d'
+                - '${DB_DATABASE:-sellmate}'
+                - '-U'
+                - '${DB_USERNAME:-sail}'
+            retries: 3
+            timeout: 5s
+
+    mailpit:
+        image: 'axllent/mailpit:latest'
+        ports:
+            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - sail
+
+    # Frontend Service
+    web:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: sellmate_web
+        ports:
+            - "3000:3000"
+        volumes:
+            - './frontend:/app'
+            - '/app/node_modules'
+        networks:
+            - sellmate_network
+
+networks:
+    sellmate_network:
+        driver: bridge
+    sail:
+        driver: bridge
+
+volumes:
+    redis_data:
+        driver: local
+    sail-pgsql:
+        driver: local
