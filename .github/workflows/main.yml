@@ -1,0 +1,69 @@
+name: SellMate CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, pgsql
+          coverage: none
+
+      - name: Install Dependencies
+        run: cd backend && composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Copy .env
+        run: cd backend && php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Generate key
+        run: cd backend && php artisan key:generate
+
+      - name: Run Pint (Linting)
+        run: cd backend && ./vendor/bin/pint --test
+
+      - name: Run Tests
+        run: cd backend && php artisan test
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: 'frontend/yarn.lock'
+
+      - name: Install Dependencies
+        run: cd frontend && yarn install --frozen-lockfile
+
+      - name: Run Lint
+        run: cd frontend && yarn lint
+
+      - name: Run Tests
+        run: cd frontend && yarn test
+
+      - name: Build
+        run: cd frontend && yarn build
+
+  deploy:
+    needs: [backend-tests, frontend-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to DigitalOcean
+        run: |
+          echo "Placeholder for DigitalOcean Deployment"
+          # Example: doctl apps create-deployment <app-id>
+          # Or: ssh-action to VPS
