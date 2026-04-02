@@ -2,6 +2,9 @@
 
 ## 1. Clean Code & Architecture
 - **Strict Typing**: Always use PHP 8.3/TypeScript strict typing. Ensure `declare(strict_types=1);` is at the top of every PHP file.
+- **Enums Over Strings**: ALWAYS use Enums for statuses, types, and fixed values. String literals and dedicated constants classes are FORBIDDEN.
+    - **Backend**: Use PHP 8.3 native Backed Enums.
+    - **Frontend**: Use TypeScript Enums or `as const` objects.
 - **Service Layer Pattern**: All business logic MUST reside in `app/Services`.
 - **Imports**: Always use absolute paths with the `@/` alias for frontend imports (e.g., `import { ... } from "@/services/api.service"` instead of `./api.service`).
 - **FormRequests**: Use dedicated `FormRequest` classes for ALL validations. No `$request->validate()` in controllers.
