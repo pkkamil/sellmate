@@ -15,6 +15,9 @@
     - **Classes**: PascalCase (e.g., `VisionService`).
 - **DRY & SOLID**: Avoid code duplication. Extract reusable logic to Services, Traits, or Helpers.
 - **No Useless Comments**: Avoid comments that state the obvious. Only comment "Why" not "What". Remove boilerplate comments.
+- **Imports & FQN**: ALWAYS use `use` statements for imports. Using fully qualified names (e.g., `\Illuminate\Http\Request`) in method signatures or code is FORBIDDEN. This applies also to classes in the global namespace (e.g., use `use Exception;` instead of `\Exception`, `use DateTime;` instead of `\DateTime`).
+- **API Response Messages**: ALL API response messages MUST be defined as Enums in `app/Enums/Api/ApiResponseMessage.php` and returned via the translation system. Hardcoded strings in controllers are FORBIDDEN.
+
 
 ## 2. Frontend Excellence (Next.js)
 - **Component Structure**: Separate presentation (UI) from logic (Hooks).

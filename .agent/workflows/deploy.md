@@ -7,7 +7,7 @@ description: Faza wdrażania zadania - przygotowanie i wypchnięcie zmian na pro
 3. Wykonaj ostatni build lokalny i upewnij się, że nie ma błędów.
 // turbo
 4. `cd frontend && yarn build && cd ..`
-5. Jeśli wszystko jest gotowe, wypchnij zmiany do gałęzi `main`.
+5. Jeśli wszystko jest gotowe, wypchnij zmiany do gałęzi `master`.
 // turbo
 6. `git push origin main`
 7. Monitoruj akcję w repozytorium na GitHubie i upewnij się, że wdrożenie do DigitalOcean przebiegło pomyślnie.
